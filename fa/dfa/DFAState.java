@@ -19,6 +19,7 @@ public class DFAState extends fa.State{
         name = token;
         init = false;
         finals = false;
+        transitions = new HashSet<Pair<Character, String>>();
     }
     
     public void addTransition(char c, String a){
@@ -27,13 +28,10 @@ public class DFAState extends fa.State{
     }
 
     public String getTransitionTo(Character c){
-        Iterator<Pair<Character, String>> iter = transitions.iterator();
-        Pair<Character, String> pair;
-        while(iter.hasNext()){
-           pair = iter.next();
-           if(pair.getKey() == c){
-                return pair.getValue();
-           }
+        for(Pair<Character, String> p : transitions){
+            if(p.getKey().equals(c)){
+                return p.getValue();
+            }
         }
         return null;
     }

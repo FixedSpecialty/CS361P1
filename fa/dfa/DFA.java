@@ -14,12 +14,31 @@ public class DFA implements DFAInterface {
 	private String initial;
 	private Set<DFAState> states;
 	private Set<Character> alphabet;
-	
+
 	public DFA(){
-	
+		states = new HashSet<DFAState>();
+		alphabet = new HashSet<Character>();
 	}
 
-
+	public String toString(){
+		String retString = "";
+		retString += "Q = {" ;
+		for(DFAState s : states){
+			retString += s.getName() + " ";
+		}
+		retString += "}\nsigma = {";
+		for(Character c : alphabet){
+			retString += c + " ";
+		}
+		retString += "}\ndelta = neeeeed tooooo addddd delllttaaaa\n\t\t\n";
+		retString += "q0 = " + getStartState().getName() + "\n";
+		retString += "F = {";
+		for(State s : getFinalStates()){
+			retString += s.getName() + " ";
+		}
+		retString += "}\n\n";
+		return retString;
+	}
 	public void addFinalState(String nextToken) {		
 		DFAState newState = new DFAState(nextToken);
 		newState.setFinal(true);
@@ -40,12 +59,10 @@ public class DFA implements DFAInterface {
 
 	public void addTransition(String valueOf, char c, String valueOf2) {
 		alphabet.add(c);
-		Iterator<DFAState> iter = states.iterator();
-		DFAState currState;
-		while(iter.hasNext()){
-			currState  = iter.next();
-			if(currState.getName() == valueOf){
-				currState.addTransition(c, valueOf2);
+		for(DFAState s : states){
+			String name = s.getName();
+			if(name.equals(valueOf)){
+				s.addTransition(c, valueOf2);
 			}
 		}
 	}
@@ -68,8 +85,16 @@ public class DFA implements DFAInterface {
 	}
 
 	public boolean accepts(String input) {
-
-		return false;
+		DFAState init = (DFAState)getStartState();
+		boolean accepts = init.isFinal();
+		DFAState next = init;
+		for(int i = 0; i<input.length(); i++){
+			Character transition = input.charAt(i);
+			String nextString = next.getTransitionTo(transition);;
+			next = (DFAState) getState(nextString);
+			accepts = next.isFinal();
+		}
+		return accepts;
 	}
 
 	@Override
@@ -80,26 +105,45 @@ public class DFA implements DFAInterface {
 
 	@Override
 	public Set<? extends State> getFinalStates() {
-
-		return null;
+		Set<DFAState> finalStates = new HashSet<DFAState>();
+		for(DFAState s: states){
+			if(s.isFinal()){
+				finalStates.add(s);
+			}
+		}		
+		return finalStates;
 	}
 
 	@Override
 	public State getStartState() {
-
+		for(DFAState s: states ){
+			if(s.isInit()){
+				return s;
+			}
+		}
 		return null;
 	}
 
 	@Override
 	public Set<Character> getABC() {
 
+		return alphabet;
+	}
+
+	public State getState(String name){
+		for(State s: states){
+			if(s.getName().equals(name)){
+				return s;
+			}
+		}
 		return null;
 	}
 
 	@Override
 	public State getToState(DFAState from, char onSymb) {
+		String next = from.getTransitionTo(onSymb);
 
-		return null;
+		return getState(next);
 	}
 
 }
