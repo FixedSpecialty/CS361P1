@@ -39,31 +39,76 @@ public class DFA implements DFAInterface {
 		retString += "}\n\n";
 		return retString;
 	}
-	public void addFinalState(String nextToken) {		
-		DFAState newState = new DFAState(nextToken);
-		newState.setFinal(true);
-		states.add(newState);
+	public void addFinalState(String stateN) {		
+		DFAState newstate = stateCheck(stateN);
+		if(newstate!=null)
+		{
+			System.out.println("state already exists");
+		}
+		else
+		{
+			newstate = new DFAState(stateN);
+			newstate.setFinal(true);
+			addState(newstate);
+		}
 	}
 
-	public void addStartState(String startStateName) {
-		DFAState newState = new DFAState(startStateName);
-		newState.setInit(true);
-		states.add(newState);
-		initial = startStateName;
+	public void addStartState(String stateN) {
+//		DFAState newState = new DFAState(stateN);
+//		newState.setInit(true);
+//		states.add(newState);
+//		initial = startStateName;
+//		DFAState newState = stateCheck()
+//		
+		DFAState newstate = stateCheck(stateN);
+		if(newstate!=null)
+		{
+			System.out.println("state already exists");
+		}
+		else
+		{
+			newstate = new DFAState(stateN);
+			newstate.setInit(true);
+			initial = stateN;
+			addState(newstate);
+		}
+	}
+	private void addState(DFAState stateN)
+	{
+		states.add(stateN);
 	}
 
-	public void addState(String nextToken) {
-		DFAState newState = new DFAState(nextToken);
-		states.add(newState);
+	public void addState(String stateN) {
+		DFAState newstate = stateCheck(stateN);
+		if(newstate!=null)
+		{
+			System.out.println("state already exists");
+		}
+		else
+		{
+			newstate = new DFAState(stateN);
+			addState(newstate);
+		}
 	}
 
-	public void addTransition(String valueOf, char c, String valueOf2) {
-		alphabet.add(c);
-		for(DFAState s : states){
-			String name = s.getName();
-			if(name.equals(valueOf)){
-				s.addTransition(c, valueOf2);
-			}
+	public void addTransition(String valueOf, char c, String valueOf2) 
+	{
+		DFAState startState = stateCheck(valueOf);
+		DFAState endState = stateCheck(valueOf2);
+		if(startState == null)
+		{
+			System.out.println("No start state exists");
+			System.exit(2);
+		}
+		else if(endState == null)
+		{
+			System.out.println("No end state exists");
+			System.exit(2);
+		}
+		startState.addTransition(c, endState);
+		if(!alphabet.contains(c))
+		{
+			alphabet.add(c);
 		}
 	}
 
@@ -95,16 +140,17 @@ public class DFA implements DFAInterface {
 			accepts = next.isFinal();
 		}
 		return accepts;
+		
 	}
 
 	@Override
-	public Set<? extends State> getStates() {
+	public Set<DFAState> getStates() {
 
 		return states;
 	}
 
 	@Override
-	public Set<? extends State> getFinalStates() {
+	public Set<DFAState> getFinalStates() {
 		Set<DFAState> finalStates = new HashSet<DFAState>();
 		for(DFAState s: states){
 			if(s.isFinal()){
@@ -140,10 +186,25 @@ public class DFA implements DFAInterface {
 	}
 
 	@Override
-	public State getToState(DFAState from, char onSymb) {
-		String next = from.getTransitionTo(onSymb);
+	public DFAState getToState(DFAState from, char onSymb) {
+		DFAState next = from.getTransitionTo(onSymb);
 
-		return getState(next);
+		return next;
+	}
+	
+	private DFAState stateCheck(String stateN)
+	{
+		DFAState retVal = null;
+		for(DFAState state: states)
+		{
+			if(state.getName().equals(stateN))
+			{
+				retVal=state;
+				break;
+			}
+		}
+		return retVal;
+		
 	}
 
 }
