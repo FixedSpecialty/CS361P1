@@ -1,6 +1,8 @@
 package fa.dfa;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.Set;
 
 
@@ -27,6 +29,35 @@ public class DFA implements DFAInterface {
 		states.add(newState);
 	}
 
+	public String toString() {
+		String retString = "";
+		retString += "Q = { ";
+		for (DFAState s : states) {
+			retString += s.getName() + " ";
+		}
+		retString += "}\nsigma = ";
+		for (Character c : alphabet) {
+			retString += c + " ";
+		}
+		retString += "}\ndelta = \n";
+		for(DFAState s : states)
+		{
+			HashMap<Character, String> map = s.getTransitions();
+			for(Entry<Character, String> e : map.entrySet())
+			{
+				retString+= "|"+s.getName() + "-> " + e.getKey()+ " = " + e.getValue() + "|"+"\n";
+			}
+		}
+		retString += "\n";
+		retString += "q0 = " + getStartState().getName() + "\n";
+		retString += "F = {";
+		for (State s : getFinalStates()) {
+			retString += s.getName() + " ";
+		}
+		retString += "}\n\n";
+		return retString;
+	}
+	
 	public void addState(DFAState state){
 		states.add(state);
 	}
