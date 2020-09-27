@@ -1,10 +1,8 @@
 package fa.dfa;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
+
 
 import fa.State;
 
@@ -29,6 +27,9 @@ public class DFA implements DFAInterface {
 		states.add(newState);
 	}
 
+	public void addState(DFAState state){
+		states.add(state);
+	}
 
 	@Override
 	public void addState(String name) {
@@ -94,8 +95,16 @@ public class DFA implements DFAInterface {
 	@Override
 	public DFA complement() {
 		DFA dfa = new DFA();
-
-		return this;
+		for(DFAState s : states){
+			DFAState newState = new DFAState(s.getName());
+			newState.setTransitions(s.getTransitions());
+			boolean init = s.isInit();
+			newState.setInit(init);
+			boolean finalSt = s.isFinal();
+			newState.setFinal(!finalSt);
+			dfa.addState(newState);
+		}
+		return dfa;
 	}
 
 	@Override

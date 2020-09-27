@@ -27,6 +27,13 @@ public class DFAState extends fa.State{
         transitions.put(c,a);
     }
 
+    public void setTransitions(HashMap<Character, String> tran){
+        transitions = tran;
+    }
+
+    public HashMap<Character, String> getTransitions(){
+        return transitions;
+    }
 
     public boolean isInit(){
         return init;
