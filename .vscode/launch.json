@@ -10,7 +10,7 @@
             "name": "Debug (Launch) - Current File",
             "request": "launch",
             "mainClass": "${file}",
-            "args": "p1tc2.txt"
+            "args": "p1tc3.txt"
         },
         {
             "type": "java",

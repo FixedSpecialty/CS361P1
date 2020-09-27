@@ -2,51 +2,49 @@ package fa.dfa;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
-
 import fa.State;
-import javafx.util.Pair;
 
 public class DFA implements DFAInterface {
-
 	private String initial;
 	private Set<DFAState> states;
 	private Set<Character> alphabet;
 
-	public DFA(){
+	public DFA() {
 		states = new HashSet<DFAState>();
 		alphabet = new HashSet<Character>();
 	}
 
-	public String toString(){
+	public String toString() {
 		String retString = "";
-		retString += "Q = {" ;
-		for(DFAState s : states){
+		retString += "Q = { ";
+		for (DFAState s : states) {
 			retString += s.getName() + " ";
 		}
 		retString += "}\nsigma = {";
-		for(Character c : alphabet){
+		for (Character c : alphabet) {
 			retString += c + " ";
 		}
 		retString += "}\ndelta = neeeeed tooooo addddd delllttaaaa\n\t\t\n";
 		retString += "q0 = " + getStartState().getName() + "\n";
 		retString += "F = {";
-		for(State s : getFinalStates()){
+		for (State s : getFinalStates()) {
 			retString += s.getName() + " ";
 		}
 		retString += "}\n\n";
 		return retString;
 	}
-	public void addFinalState(String stateN) {		
+
+	public void addFinalState(String stateN) {
 		DFAState newstate = stateCheck(stateN);
-		if(newstate!=null)
-		{
-			System.out.println("state already exists");
-		}
-		else
-		{
+		if (newstate != null) {
+			if(newstate.getName().equals(initial)){
+				getStartState().setFinal(true);
+			}
+			else{
+				System.out.println("state already exists");
+			}
+		} else {
 			newstate = new DFAState(stateN);
 			newstate.setFinal(true);
 			addState(newstate);
@@ -54,93 +52,80 @@ public class DFA implements DFAInterface {
 	}
 
 	public void addStartState(String stateN) {
-//		DFAState newState = new DFAState(stateN);
-//		newState.setInit(true);
-//		states.add(newState);
-//		initial = startStateName;
-//		DFAState newState = stateCheck()
-//		
 		DFAState newstate = stateCheck(stateN);
-		if(newstate!=null)
-		{
+		if (newstate != null) {
 			System.out.println("state already exists");
-		}
-		else
-		{
+		} else {
 			newstate = new DFAState(stateN);
 			newstate.setInit(true);
 			initial = stateN;
 			addState(newstate);
 		}
 	}
-	private void addState(DFAState stateN)
-	{
+
+	private void addState(DFAState stateN) {
 		states.add(stateN);
 	}
 
 	public void addState(String stateN) {
 		DFAState newstate = stateCheck(stateN);
-		if(newstate!=null)
-		{
+		if (newstate != null) {
 			System.out.println("state already exists");
-		}
-		else
-		{
+		} else {
 			newstate = new DFAState(stateN);
 			addState(newstate);
 		}
 	}
 
-	public void addTransition(String valueOf, char c, String valueOf2) 
-	{
+	public void addTransition(String valueOf, char c, String valueOf2) {
 		DFAState startState = stateCheck(valueOf);
 		DFAState endState = stateCheck(valueOf2);
-		if(startState == null)
-		{
+		if (startState == null) {
 			System.out.println("No start state exists");
 			System.exit(2);
-		}
-		else if(endState == null)
-		{
+		} else if (endState == null) {
 			System.out.println("No end state exists");
 			System.exit(2);
 		}
 		startState.addTransition(c, endState);
-		if(!alphabet.contains(c))
-		{
+		if (!alphabet.contains(c)) {
 			alphabet.add(c);
 		}
 	}
 
 	public DFA complement() {
-		DFA dfa = this;
-		Set<? extends State> states = dfa.getStates();
-		Iterator<? extends State> iter = states.iterator();
-		DFAState curr;
-		while(iter.hasNext()){
-			curr = (DFAState)iter.next();
-			if(curr.isFinal()){
-				curr.setFinal(false);
-			}
-			else{
-				curr.setFinal(true);
-			}
+		DFA dfa = new DFA();
+		Set<DFAState> newStates = new HashSet<DFAState>();
+		
+		for(DFAState s : states){
+			DFAState newSta = new DFAState(s.getName());		
+			newSta.setInit(s.isInit());
+			newSta.setFinal(!s.isFinal());
+			newSta.setTransitions(s.getTransitions());
+			newStates.add(newSta);
 		}
+		dfa.setStates(newStates);
 		return dfa;
+
+	}
+
+	public void setStates(Set<DFAState> sta){
+		states = sta;
 	}
 
 	public boolean accepts(String input) {
-		DFAState init = (DFAState)getStartState();
+		DFAState init = getStartState();
+		if (input.equals("e"))
+			return init.isFinal();
 		boolean accepts = init.isFinal();
 		DFAState next = init;
-		for(int i = 0; i<input.length(); i++){
+		for (int i = 0; i < input.length(); i++) {
 			Character transition = input.charAt(i);
-			String nextString = next.getTransitionTo(transition);;
-			next = (DFAState) getState(nextString);
+			next = next.getTransitionTo(transition);
 			accepts = next.isFinal();
 		}
 		return accepts;
-		
+
 	}
 
 	@Override
@@ -152,18 +137,18 @@ public class DFA implements DFAInterface {
 	@Override
 	public Set<DFAState> getFinalStates() {
 		Set<DFAState> finalStates = new HashSet<DFAState>();
-		for(DFAState s: states){
-			if(s.isFinal()){
+		for (DFAState s : states) {
+			if (s.isFinal()) {
 				finalStates.add(s);
 			}
-		}		
+		}
 		return finalStates;
 	}
 
 	@Override
-	public State getStartState() {
-		for(DFAState s: states ){
-			if(s.isInit()){
+	public DFAState getStartState() {
+		for (DFAState s : states) {
+			if (s.isInit()) {
 				return s;
 			}
 		}
@@ -176,9 +161,9 @@ public class DFA implements DFAInterface {
 		return alphabet;
 	}
 
-	public State getState(String name){
-		for(State s: states){
-			if(s.getName().equals(name)){
+	public State getState(String name) {
+		for (State s : states) {
+			if (s.getName().equals(name)) {
 				return s;
 			}
 		}
@@ -191,20 +176,17 @@ public class DFA implements DFAInterface {
 
 		return next;
 	}
-	
-	private DFAState stateCheck(String stateN)
-	{
+
+	private DFAState stateCheck(String stateN) {
 		DFAState retVal = null;
-		for(DFAState state: states)
-		{
-			if(state.getName().equals(stateN))
-			{
-				retVal=state;
+		for (DFAState state : states) {
+			if (state.getName().equals(stateN)) {
+				retVal = state;
 				break;
 			}
 		}
 		return retVal;
-		
+
 	}
 
 }

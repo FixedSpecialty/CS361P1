@@ -1,7 +1,7 @@
 package fa.dfa;
 
 import java.util.*;
-import javafx.util.Pair;
+
 
 public class DFAState extends fa.State{
     
@@ -19,26 +19,28 @@ public class DFAState extends fa.State{
         name = token;
         init = false;
         finals = false;
+        transitions = new HashMap<Character, DFAState>();
        // transitions = new HashSet<Pair<Character, String>>();
     }
     
     public void addTransition(char c, DFAState a){
-//Pair<Character, String> pair = new Pair<Character, String>(c,a);
         transitions.put(c,a);
     }
 
+    public HashMap<Character, DFAState> getTransitions(){
+        return transitions;
+    }
+
+    public void setTransitions(HashMap<Character, DFAState> tran){
+        transitions = tran;
+    }
+
     public DFAState getTransitionTo(char c){
-//        for(Pair<Character, String> p : transitions){
-//            if(p.getKey().equals(c)){
-//                return p.getValue();
-//            }
-//        }
-//        return null;
-//        
         DFAState retVal = transitions.get(c);
         if(retVal == null)
         {
-        	System.exit(2);
+            System.out.println("DFAState - line 42");
+            System.exit(2);
         }
         return retVal;
     }
